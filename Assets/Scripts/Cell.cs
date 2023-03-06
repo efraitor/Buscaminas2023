@@ -40,22 +40,44 @@ public class Cell : MonoBehaviour
         {
             //TO DO:
             //Llamamos al método que descubre todas las minas del juego
+            GridHelper.UncoverAllMines();
+            //Mostrar un mensaje de GameOver
             Debug.Log("Pringaaao");
         }
         //Si no hay mina en esa celda
         else
         {
             //TO DO:
-            //Cambiar la textura de la celda
+            /*Cambiar la textura de la celda
+            *Al método de abajo le pasamos la posición de esta celda concreta
+            *Cargamos la textura de minas adyacentes adecuada*/
+            LoadTexture(GridHelper.CountAdjacentMines(x,y)); //Usamos el método que cuenta cuantas minas hay alrededor de una celda
             //Descubrir todo el área sin minas alrededor de la celda destapada
+            //Le pasamos la posición en X e Y de esa celda concreta y vemos en el array de celdas si esta había sido visitada o no
+            GridHelper.FloodFillUncover(x, y, new bool[GridHelper.w, GridHelper.h]);
             //Comprobar si el juego ha acabado o no
+            if(GridHelper.HasTheGameEnded())
+            {
+                Debug.Log("¡Has ganado! Fin de la partida.");
+            }
         }
     }
 
     //Método para cargar las texturas en las celdas
-    public void LoadTexture()
-    {
-
+    public void LoadTexture(int adjacentCount) //para pasarle el conteo de minas adyacentes de una celda
+    { 
+        //Si hay una mina
+        if(hasMine)
+        {
+            //Accedemos al SpriteRenderer de esa celda para cambiar su imagen a una de mina
+            GetComponent<SpriteRenderer>().sprite = mineTexture;
+        }
+        //Si no hay mina en esa celda
+        else
+        {
+            //Accedemos al SpriteRenderer de esa celda para cambiar su imagen a una de las que están dentro del array de EmptyTextures
+            GetComponent<SpriteRenderer>().sprite = emptyTextures[adjacentCount];
+        }
     }
 
     //Método de ayuda para saber si la celda ha sido destapada o no, devolviéndonos verdadero o falso
